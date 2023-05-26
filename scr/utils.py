@@ -7,27 +7,28 @@ import pandas as pd
 def load_json_file(filename):
     operations_executed = []
     with open(filename, 'r', encoding='utf-8') as f:
-        dict_operations = json.load(f)    #
+        dict_operations = json.load(f)    # Читаем данные зи json
 
-    df = pd.DataFrame(dict_operations)
+    df = pd.DataFrame(dict_operations)  # Модуль pandas создал data frame
 
-    sort_df = df.sort_values('date', ascending=False).to_dict('records')
+    sort_df = df.sort_values('date', ascending=False).to_dict('records') # сортируем по дате в обратном порядке, чтобы более свежие операции были вверху
 
-    for operation in sort_df:
+    for operation in sort_df:   #цикл обработки и сортировки
         operation.items()
         dict_filter = {}
         for k, v in operation.items():
-            if k in ('state') and v == 'EXECUTED':
-                # print(operation)
+            if k in ('state') and v == 'EXECUTED':   # берем только EXTENDED
                 operations_executed.append(dict(
                     filter(lambda item: item[0] in ('date', 'description', 'from', 'to', 'operationAmount'),
-                           operation.items())))
+                           operation.items())))   # берем только нужные нам поля и записываем в список
 
     return operations_executed[0:5]  # Отдает последние пять операций
 
 
 """
 Конвертация полученных данных в нужный нам формат
+перебираем все данные преобразуем их в нужный нам вид.
+Выводим на экран
 """
 def processing_for_output(dict_operations):
     for_test = []
@@ -70,7 +71,6 @@ def processing_for_output(dict_operations):
                         to_end = f"{to_beginning}  ****{end_to_end}"
             if k == 'operationAmount':
                 sum_operation = v
-                # print(sum_operation)
                 for k, v in sum_operation.items():
                     if k == 'amount':
                         sum_op = v
@@ -83,6 +83,6 @@ def processing_for_output(dict_operations):
         print(f"{date} {description}")
         print(f"{from_end} -> {to_end}")
         print(f"{sum_op} {currency}")
-        print()
-        for_test.append(f"{date} {description} {from_end} {to_end} {sum_op} {currency}")
-    return for_test
+
+        for_test.append(f"{date} {description} {from_end} {to_end} {sum_op} {currency}") # Записываем в список для использования в тестировании
+    return for_test  # Вывод списка
